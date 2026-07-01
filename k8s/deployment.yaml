@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: harnessbank-demo
+  namespace: harnessbank-demo
+  labels:
+    app: harnessbank-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: harnessbank-demo
+  template:
+    metadata:
+      labels:
+        app: harnessbank-demo
+    spec:
+      containers:
+        - name: harnessbank-demo
+          image: harnessbank-demo:latest
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          # DEMO INTENTIONAL BUG: readinessProbe points to /healthz (does not exist).
+          # The correct path is /health. The Manifest Remediator Agent should fix this.
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5

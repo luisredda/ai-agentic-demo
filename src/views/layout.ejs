@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= appName %></title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="demo-banner">
+    ⚠️ DEMO ONLY — This app is intentionally vulnerable. Not for production use.
+  </div>
+
+  <nav class="navbar">
+    <div class="navbar-brand"><%= appName %></div>
+    <div class="navbar-links">
+      <a href="/">Dashboard</a>
+      <a href="/transfer">Transfer</a>
+      <a href="/login">Login</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <%- body %>
+  </main>
+
+  <footer class="footer">
+    <p>DemoBank AI SDLC &mdash; Demo Only &mdash; Not a real bank</p>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= appName %> - Transfer</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="demo-banner">
+    ⚠️ DEMO ONLY — This app is intentionally vulnerable. Not for production use.
+  </div>
+
+  <nav class="navbar">
+    <div class="navbar-brand"><%= appName %></div>
+    <div class="navbar-links">
+      <a href="/">Dashboard</a>
+      <a href="/transfer" class="active">Transfer</a>
+      <a href="/login">Login</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <h1 class="page-title">Transfer Funds</h1>
+
+    <% if (error) { %>
+      <div class="alert alert-error"><%= error %></div>
+    <% } %>
+    <% if (success) { %>
+      <div class="alert alert-success"><%= success %></div>
+    <% } %>
+
+    <div class="form-card">
+      <form id="transfer-form" action="/api/transfers" method="POST">
+        <div class="form-group">
+          <label for="fromAccount">From Account</label>
+          <select name="fromAccount" id="fromAccount" class="form-control">
+            <% if (accounts.length > 0) { %>
+              <% accounts.forEach(function(a) { %>
+                <option value="<%= a.id %>"><%= a.id %> ($<%= a.balance.toFixed(2) %>)</option>
+              <% }); %>
+            <% } else { %>
+              <option value="DEMO-001">DEMO-001 ($12,450.00)</option>
+              <option value="DEMO-002">DEMO-002 ($3,200.00)</option>
+            <% } %>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="toAccount">To Account</label>
+          <input type="text" name="toAccount" id="toAccount" class="form-control"
+            placeholder="Enter destination account ID" value="">
+        </div>
+
+        <div class="form-group">
+          <label for="amount">Amount ($)</label>
+          <!-- DEMO UX BUG: no min attribute, accepts negative/zero values, shows confusing success message -->
+          <input type="number" name="amount" id="amount" class="form-control"
+            placeholder="0.00" step="0.01">
+        </div>
+
+        <div class="form-group">
+          <label for="memo">Memo (optional)</label>
+          <input type="text" name="memo" id="memo" class="form-control"
+            placeholder="Transfer note">
+        </div>
+
+        <!-- DEMO UX BUG: button partially hidden/clipped on mobile due to fixed margins -->
+        <div class="form-actions">
+          <button type="submit" class="btn-primary apply-transfer-btn">Apply Transfer</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="transfer-result"></div>
+  </main>
+
+  <footer class="footer">
+    <p>DemoBank AI SDLC &mdash; Demo Only &mdash; Not a real bank</p>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>

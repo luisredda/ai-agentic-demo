@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: harnessbank-demo-config
+  namespace: harnessbank-demo
+  labels:
+    app: harnessbank-demo
+data:
+  PORT: "3000"
+  NODE_ENV: "demo"
+  APP_NAME: "DemoBank AI SDLC"
