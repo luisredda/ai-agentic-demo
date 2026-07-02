@@ -54,6 +54,11 @@ app.get("/transfer", (req, res) => {
   });
 });
 
+// Bill payment page
+app.get("/pay-bill", (req, res) => {
+  res.render("pay-bill", { appName: "DemoBank AI SDLC" });
+});
+
 // Login page
 app.get("/login", (req, res) => {
   res.render("login", { appName: "DemoBank AI SDLC", error: null });
