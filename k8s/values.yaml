@@ -1,9 +1,11 @@
 # Harness values file — expressions resolved at deploy time
 # <+artifact.image> resolves to the full image:tag from the pipeline artifact source
+# <+pipeline.executionId> changes on every run so Kubernetes rolls the pod
 
 name: harnessbank-demo
 namespace: harnessbank-demo
 image: <+artifact.image>
+rolloutId: <+pipeline.executionId>
 replicas: 1
 
 resources:
