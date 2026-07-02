@@ -26,9 +26,11 @@ document.addEventListener("DOMContentLoaded", function () {
         if (result.success) {
           // DEMO UX BUG: shows success even for invalid (negative/zero) amounts
           resultDiv.innerHTML =
-            '<div class="alert alert-success">Transfer completed! Amount: $' +
+            '<div class="alert alert-success" style="font-size:18px;font-weight:800;padding:24px;">✅ Transfer completed successfully!<br>Amount transferred: <strong>$' +
             result.amount +
-            "</div>";
+            '</strong><br><span style="font-size:12px;color:#276749;">Transaction ID: ' +
+            result.transferId +
+            "</span></div>";
         } else {
           resultDiv.innerHTML =
             '<div class="alert alert-error">Error: ' + result.error + "</div>";
