@@ -19,5 +19,5 @@ test("Kubernetes deployment refreshes pods for mutable image tags", () => {
 
   expect(deployment).toContain('harness.io/rollout-id: "{{ .Values.rolloutId }}"');
   expect(deployment).toMatch(/imagePullPolicy:\s+Always\b/);
-  expect(values).toMatch(/rolloutId:\s+<\+pipeline\.executionId>\b/);
+  expect(values).toContain("rolloutId: <+pipeline.executionId>");
 });
