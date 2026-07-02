@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: harnessbank-demo
+  namespace: harnessbank-demo
+  labels:
+    app: harnessbank-demo
+spec:
+  type: LoadBalancer
+  selector:
+    app: harnessbank-demo
+  ports:
+    - port: 80
+      targetPort: 3000
+      protocol: TCP

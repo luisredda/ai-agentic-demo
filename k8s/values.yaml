@@ -1,0 +1,17 @@
+# Harness values file — expressions resolved at deploy time
+# <+artifact.image> resolves to the full image:tag from the pipeline artifact source
+
+name: harnessbank-demo
+namespace: harnessbank-demo
+image: <+artifact.image>
+replicas: 1
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "256Mi"
+
+containerPort: 3000
