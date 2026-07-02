@@ -1,36 +1,36 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: harnessbank-demo
-  namespace: harnessbank-demo
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
   labels:
-    app: harnessbank-demo
+    app: {{ .Values.name }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
-      app: harnessbank-demo
+      app: {{ .Values.name }}
   template:
     metadata:
       labels:
-        app: harnessbank-demo
+        app: {{ .Values.name }}
     spec:
       containers:
-        - name: harnessbank-demo
-          image: harnessbank-demo:latest
+        - name: {{ .Values.name }}
+          image: {{ .Values.image }}
           ports:
-            - containerPort: 3000
+            - containerPort: {{ .Values.containerPort }}
           resources:
             requests:
-              cpu: "100m"
-              memory: "128Mi"
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
             limits:
-              cpu: "500m"
-              memory: "256Mi"
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
           livenessProbe:
             httpGet:
               path: /health
-              port: 3000
+              port: {{ .Values.containerPort }}
             initialDelaySeconds: 10
             periodSeconds: 10
           # DEMO INTENTIONAL BUG: readinessProbe points to /healthz (does not exist).
@@ -38,6 +38,6 @@ spec:
           readinessProbe:
             httpGet:
               path: /healthz
-              port: 3000
+              port: {{ .Values.containerPort }}
             initialDelaySeconds: 5
             periodSeconds: 5
