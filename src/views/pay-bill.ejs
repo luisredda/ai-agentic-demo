@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= appName %> - Pay Bill</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="demo-banner">
+    DEMO ONLY - This app is intentionally vulnerable. Not for production use.
+  </div>
+
+  <nav class="navbar">
+    <div class="navbar-brand"><%= appName %></div>
+    <div class="navbar-links">
+      <a href="/">Dashboard</a>
+      <a href="/transfer">Transfer</a>
+      <a href="/login">Login</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <h1 class="page-title">Pay Bill</h1>
+
+    <div class="form-card">
+      <p class="helper-text">
+        Choose a payee and enter the payment details. This demo page does not submit real payments.
+      </p>
+
+      <form action="/pay-bill" method="GET">
+        <div class="form-group">
+          <label for="payee">Payee</label>
+          <select name="payee" id="payee" class="form-control">
+            <option value="electric">Electric Company</option>
+            <option value="water">Water Utility</option>
+            <option value="internet">Internet Provider</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="amount">Amount ($)</label>
+          <input type="number" name="amount" id="amount" class="form-control" placeholder="0.00" step="0.01">
+        </div>
+
+        <div class="form-group">
+          <label for="memo">Memo (optional)</label>
+          <input type="text" name="memo" id="memo" class="form-control" placeholder="Bill payment note">
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>DemoBank AI SDLC &mdash; Demo Only &mdash; Not a real bank</p>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>
