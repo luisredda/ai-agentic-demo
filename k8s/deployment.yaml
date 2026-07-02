@@ -7,6 +7,7 @@ metadata:
     app: {{ .Values.name }}
 spec:
   replicas: {{ .Values.replicas }}
+  progressDeadlineSeconds: 60
   selector:
     matchLabels:
       app: {{ .Values.name }}
@@ -44,3 +45,4 @@ spec:
               port: {{ .Values.containerPort }}
             initialDelaySeconds: 5
             periodSeconds: 5
+            failureThreshold: 3
