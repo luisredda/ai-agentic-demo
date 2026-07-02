@@ -1,5 +1,4 @@
 /* DemoBank AI SDLC — Demo styles */
-/* DEMO UX BUG: quick-action cards and transfer button have layout issues on mobile */
 
 * {
   box-sizing: border-box;
@@ -113,11 +112,12 @@ body {
 }
 
 /* Quick actions */
-/* DEMO UX BUG: fixed min-width causes overflow/misalignment at ~480–600px viewport */
+/* DEMO UX BUG: cards are randomly rotated and overlapping — looks completely broken */
 .quick-actions {
   display: flex;
   gap: 16px;
-  margin-bottom: 32px;
+  margin-bottom: 120px;
+  position: relative;
 }
 
 .action-card {
@@ -129,6 +129,18 @@ body {
   min-width: 160px;
   flex: 1;
   transition: box-shadow 0.2s;
+}
+
+.action-card:nth-child(2) {
+  transform: rotate(15deg) translateY(30px);
+}
+
+.action-card:nth-child(3) {
+  transform: rotate(-10deg) translateY(-20px);
+}
+
+.action-card:nth-child(4) {
+  transform: rotate(8deg) translateY(40px);
 }
 
 .action-card:hover {
@@ -205,17 +217,18 @@ body {
   padding: 32px !important;
 }
 
-/* DEMO UX BUG: status-badge has position:absolute which causes it to overlap amount at narrow widths */
+/* DEMO UX BUG: status badge is giant and covers the entire amount column */
 .status-badge {
   display: inline-block;
-  padding: 3px 10px;
+  padding: 8px 40px;
   border-radius: 999px;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.4px;
-  position: relative;
-  left: 0;
+  position: absolute;
+  margin-left: -20px;
+  z-index: 10;
 }
 
 .status-completed { background: #c6f6d5; color: #22543d; }
@@ -266,10 +279,10 @@ body {
   background: white;
 }
 
-/* DEMO UX BUG: form-actions has a fixed right margin that clips the button on mobile screens <375px */
+/* DEMO UX BUG: transfer button is pushed completely off-screen */
 .form-actions {
   margin-top: 24px;
-  margin-right: 120px;
+  margin-left: 600px;
 }
 
 .apply-transfer-btn {
