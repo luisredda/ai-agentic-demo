@@ -9,3 +9,15 @@ test("Kubernetes readiness probe uses the application health endpoint", () => {
 
   expect(manifest).toMatch(/readinessProbe:\s+httpGet:\s+path: \/health\b/);
 });
+
+test("Kubernetes deployment refreshes pods for mutable image tags", () => {
+  const deployment = fs.readFileSync(
+    path.join(__dirname, "../k8s/deployment.yaml"),
+    "utf8"
+  );
+  const values = fs.readFileSync(path.join(__dirname, "../k8s/values.yaml"), "utf8");
+
+  expect(deployment).toContain('harness.io/rollout-id: "{{ .Values.rolloutId }}"');
+  expect(deployment).toMatch(/imagePullPolicy:\s+Always\b/);
+  expect(values).toMatch(/rolloutId:\s+<\+pipeline\.executionId>\b/);
+});

@@ -4,6 +4,7 @@
 name: harnessbank-demo
 namespace: harnessbank-demo
 image: <+artifact.image>
+rolloutId: <+pipeline.executionId>
 replicas: 1
 
 resources:

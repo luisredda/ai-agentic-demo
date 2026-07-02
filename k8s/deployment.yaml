@@ -14,10 +14,13 @@ spec:
     metadata:
       labels:
         app: {{ .Values.name }}
+      annotations:
+        harness.io/rollout-id: "{{ .Values.rolloutId }}"
     spec:
       containers:
         - name: {{ .Values.name }}
           image: {{ .Values.image }}
+          imagePullPolicy: Always
           ports:
             - containerPort: {{ .Values.containerPort }}
           resources:
