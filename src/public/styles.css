@@ -112,12 +112,11 @@ body {
 }
 
 /* Quick actions */
-/* DEMO UX BUG: cards are randomly rotated and overlapping — looks completely broken */
 .quick-actions {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 120px;
-  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
 }
 
 .action-card {
@@ -126,21 +125,8 @@ body {
   border-radius: 10px;
   padding: 20px 16px;
   text-align: center;
-  min-width: 160px;
-  flex: 1;
   transition: box-shadow 0.2s;
-}
-
-.action-card:nth-child(2) {
-  transform: rotate(15deg) translateY(30px);
-}
-
-.action-card:nth-child(3) {
-  transform: rotate(-10deg) translateY(-20px);
-}
-
-.action-card:nth-child(4) {
-  transform: rotate(8deg) translateY(40px);
+  min-height: 116px;
 }
 
 .action-card:hover {

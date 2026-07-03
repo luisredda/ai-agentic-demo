@@ -1,4 +1,6 @@
 const request = require("supertest");
+const fs = require("fs");
+const path = require("path");
 const { initDb } = require("../src/db");
 
 let app;
@@ -23,6 +25,21 @@ test("dashboard pay bill action links to the bill payment page", async () => {
   const res = await request(app).get("/");
   expect(res.text).toContain('href="/pay-bill"');
   expect(res.text).toContain("Pay Bill");
+});
+
+test("dashboard quick action cards use an aligned grid layout", () => {
+  const styles = fs.readFileSync(
+    path.join(__dirname, "../src/public/styles.css"),
+    "utf8"
+  );
+  const quickActionsRule = styles.match(/\.quick-actions\s*\{[^}]*\}/);
+
+  expect(quickActionsRule).not.toBeNull();
+  expect(quickActionsRule[0]).toContain("display: grid");
+  expect(quickActionsRule[0]).toContain("grid-template-columns");
+  expect(styles).not.toMatch(
+    /\.action-card:nth-child\(\d+\)\s*\{[^}]*transform:/
+  );
 });
 
 test("GET /pay-bill returns 200", async () => {
