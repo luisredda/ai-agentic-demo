@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const { getDb } = require("../db");
+const csrfProtection = require("../csrf");
 
 // DEMO VULNERABILITY: weak validation — allows zero/negative amounts and arbitrary memo/account IDs (VULN-002 partial)
 // Do not fix — this is the UX bug users complain about in Slack
-router.post("/", (req, res) => {
+router.post("/", csrfProtection, (req, res) => {
   const { fromAccount, toAccount, amount, memo } = req.body;
 
   // Intentionally weak validation: no check for negative/zero amounts

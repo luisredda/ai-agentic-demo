@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const cors = require("cors");
 const { getDb } = require("./db");
+const csrfProtection = require("./csrf");
 
 const app = express();
 
@@ -11,6 +12,7 @@ app.use(cors({ origin: "*" }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(csrfProtection);
 app.use(express.static(path.join(__dirname, "public")));
 
 app.set("view engine", "ejs");
@@ -50,6 +52,7 @@ app.get("/transfer", (req, res) => {
       appName: "DemoBank AI SDLC",
       error: null,
       success: null,
+      csrfToken: req.csrfToken(),
     });
   });
 });
@@ -61,7 +64,11 @@ app.get("/pay-bill", (req, res) => {
 
 // Login page
 app.get("/login", (req, res) => {
-  res.render("login", { appName: "DemoBank AI SDLC", error: null });
+  res.render("login", {
+    appName: "DemoBank AI SDLC",
+    error: null,
+    csrfToken: req.csrfToken(),
+  });
 });
 
 app.post("/login", (req, res) => {

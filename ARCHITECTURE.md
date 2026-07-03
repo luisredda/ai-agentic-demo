@@ -6,15 +6,18 @@ This is an intentionally vulnerable demo banking application designed for AI SDL
 
 ## Components
 
-- **Web Application** (src/app.js) — Express.js application serving the demo banking interface with intentional security vulnerabilities for demonstration purposes.
+- **Web Application** (src/app.js) — Express.js application serving the demo banking interface with CSRF validation for state-changing requests.
 - **Admin Routes** (src/routes/admin.js) — Administrative endpoints including ping/status checks with host validation.
-- **Statements API** (src/routes/statements.js) — Secure statement download endpoint with allowlist-based access control.
+- **Statements API** (src/routes/statements.js) — Secure statement download endpoint with allowlist-based access control and literal download targets.
+- **CSRF Middleware** (src/csrf.js) — Double-submit token middleware for form and JSON API POST requests.
 - **View Templates** (src/views/) — EJS templates for server-side rendering with XSS protection through output escaping (welcome.ejs, layout.ejs).
 - **Weather Integration** (integrations.js) — Static integration metadata module listing available external integrations.
 
 ## Data Flow
 
 User requests → Express.js routes → Business logic/validation → Response rendering via EJS templates or JSON API responses.
+
+State-changing requests → CSRF token validation → Express.js route handlers → Business logic/validation → JSON or redirect response.
 
 ## Dependencies
 
@@ -37,3 +40,4 @@ The application is containerized using Docker and deployed to Kubernetes with th
 - **Non-root container runtime** enforced to follow security best practices and reduce attack surface in containerized environments. **Why:** Mitigates privilege escalation risks. **How to apply:** All container deployments must specify a non-root user.
 - **EJS template escaping** used for user-controlled content rendering to prevent XSS attacks. **Why:** Output escaping (`<%= %>`) automatically HTML-encodes user input, blocking script injection. **How to apply:** Use `<%= %>` for all user-provided data in templates; never use `<%- %>` (raw output) for untrusted input.
 - **Allowlist-based file access** implemented for statement downloads instead of user-controlled path construction. **Why:** Prevents path traversal attacks. **How to apply:** Define allowed resources in a static allowlist and validate requests against it before file access.
+- **Double-submit CSRF tokens** protect state-changing requests. **Why:** Prevents cross-site form/API submissions from reusing browser credentials. **How to apply:** Render `_csrf` in forms and send it with JSON requests.

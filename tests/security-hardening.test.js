@@ -38,6 +38,14 @@ test("welcome page escapes reflected query text", async () => {
   expect(res.text).not.toContain('<script>alert("xss")</script>');
 });
 
+test("transfer form includes a CSRF token", async () => {
+  const res = await request(app).get("/transfer");
+
+  expect(res.status).toBe(200);
+  expect(res.text).toMatch(/name="_csrf" value="[a-f0-9]{64}"/);
+  expect(res.headers["set-cookie"].join(";")).toContain("csrfToken=");
+});
+
 test("Docker image declares a non-root runtime user", () => {
   const dockerfile = fs.readFileSync(
     path.join(__dirname, "../Dockerfile"),
