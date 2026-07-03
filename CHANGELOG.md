@@ -10,3 +10,4 @@
 ### Fixed
 
 - Fix dashboard quick action card alignment by replacing flex/transform layout with responsive grid (#16)
+- Fix Kubernetes readiness probe to use correct `/health` endpoint path (#18)
