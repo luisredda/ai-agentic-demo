@@ -42,5 +42,7 @@ spec:
             httpGet:
               path: /healthz
               port: {{ .Values.containerPort }}
-            initialDelaySeconds: 5
-            periodSeconds: 5
+            initialDelaySeconds: 1
+            periodSeconds: 2            # check more often
+            timeoutSeconds: 1           # don't wait long per request
+            failureThreshold: 1  
