@@ -31,7 +31,7 @@ The application is containerized using Docker and deployed to Kubernetes with th
 
 - **Non-root runtime**: Container runs as user `node` (UID 1000) in both Docker and Kubernetes
 - **Security contexts**: Pod-level and container-level security contexts enforce `runAsNonRoot: true`, `allowPrivilegeEscalation: false`, and drop all Linux capabilities
-- **Health checks**: Liveness probe at `/health` (port 3000) with 10s initial delay; readiness probe at `/healtz` with 5s initial delay
+- **Health checks**: Liveness probe at `/health` (port 3000) with 10s initial delay; readiness probe at `/health` with 5s initial delay
 - **Resource limits**: Configured via Kubernetes deployment manifest
 
 ## Decisions and Trade-offs
