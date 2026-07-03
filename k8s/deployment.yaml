@@ -8,7 +8,7 @@ metadata:
 spec:
   replicas: {{ .Values.replicas }}
   # Fail the rollout quickly when readiness never passes (default is 600s).
-  progressDeadlineSeconds: 600
+  progressDeadlineSeconds: 20
   selector:
     matchLabels:
       app: {{ .Values.name }}
@@ -42,7 +42,7 @@ spec:
           # The correct path is /health. The Manifest Remediator Agent should fix this.
           readinessProbe:
             httpGet:
-              path: /health
+              path: /healthz
               port: {{ .Values.containerPort }}
             initialDelaySeconds: 10
             periodSeconds: 2
