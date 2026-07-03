@@ -42,7 +42,7 @@ spec:
           # The correct path is /health. The Manifest Remediator Agent should fix this.
           readinessProbe:
             httpGet:
-              path: /healthz
+              path: /health
               port: {{ .Values.containerPort }}
             initialDelaySeconds: 1
             periodSeconds: 2
