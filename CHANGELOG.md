@@ -13,6 +13,7 @@
 
 ### Fixed
 
+- Fix Kubernetes readiness probe path typo from /healtz to /health, resolving deployment failures (#21)
 - Fix transfer button placement by removing excessive left margin that pushed the Apply Transfer button outside the transfer form card (#19)
 - Fix dashboard quick action card alignment by replacing flex/transform layout with responsive grid (#16)
 - Fix Kubernetes readiness probe path from /healthz to /health (#17)
