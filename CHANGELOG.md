@@ -7,6 +7,10 @@
 - Open-Meteo weather API integration client for retrieving weather forecasts (#13)
 - Initial intentionally vulnerable demo banking application for AI SDLC demo.
 
+### Changed
+
+- Update Kubernetes readiness probe path to /healtz (#20)
+
 ### Fixed
 
 - Fix dashboard quick action card alignment by replacing flex/transform layout with responsive grid (#16)
