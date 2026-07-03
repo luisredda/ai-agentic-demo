@@ -9,6 +9,9 @@ RUN npm ci --only=production
 COPY src/ ./src/
 COPY scripts/ ./scripts/
 
+RUN chown -R node:node /app
+USER node
+
 EXPOSE 3000
 
 CMD ["npm", "start"]

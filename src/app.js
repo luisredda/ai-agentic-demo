@@ -69,15 +69,9 @@ app.post("/login", (req, res) => {
   res.redirect("/");
 });
 
-// DEMO VULNERABILITY: reflected XSS — query param reflected directly into HTML (VULN-006)
-// Do not fix — required for Semgrep SAST demo finding demo-bank-reflected-xss
 app.get("/welcome", (req, res) => {
   const name = req.query.name || "Guest";
-  res.send(
-    `<html><body><h1>Welcome to DemoBank, ` +
-    req.query.name +
-    `!</h1><p>This is a demo application.</p></body></html>`
-  );
+  res.render("welcome", { appName: "DemoBank AI SDLC", name });
 });
 
 // Health endpoint — correct path for liveness/readiness

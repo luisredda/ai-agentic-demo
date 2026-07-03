@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= appName %></title>
+  <title><%= appName %> - Welcome</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
   <div class="demo-banner">
-    ⚠️ DEMO ONLY — This app is intentionally vulnerable. Not for production use.
+    DEMO ONLY - This app is intentionally vulnerable. Not for production use.
   </div>
 
   <nav class="navbar">
@@ -21,7 +21,8 @@
   </nav>
 
   <main class="container">
-    <%= body || "" %>
+    <h1 class="page-title">Welcome to DemoBank, <%= name %>!</h1>
+    <p>This is a demo application.</p>
   </main>
 
   <footer class="footer">

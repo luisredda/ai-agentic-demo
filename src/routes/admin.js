@@ -1,18 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const { exec } = require("child_process");
 
-// DEMO VULNERABILITY: command injection via user-controlled host parameter (VULN-002)
-// Do not fix — required for Semgrep SAST demo finding demo-bank-command-injection
+const HOST_PATTERN = /^[a-zA-Z0-9.-]{1,253}$/;
+
 router.get("/ping", (req, res) => {
   const host = req.query.host || "localhost";
 
-  // Intentionally unsafe: user-controlled input passed directly to exec
-  const cmd = "echo 'Pinging: " + host + "'";
-  exec(cmd, (err, stdout, stderr) => {
-    if (err) return res.status(500).json({ error: "Ping failed" });
-    res.json({ result: stdout.trim(), host });
-  });
+  if (!HOST_PATTERN.test(host)) {
+    return res.status(400).json({ error: "Invalid host" });
+  }
+
+  res.json({ result: `Pinging: ${host}`, host });
 });
 
 router.get("/status", (req, res) => {
