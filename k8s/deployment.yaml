@@ -18,10 +18,20 @@ spec:
       annotations:
         harness.io/rollout-id: "{{ .Values.rolloutId }}"
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
         - name: {{ .Values.name }}
           image: {{ .Values.image }}
           imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           ports:
             - containerPort: {{ .Values.containerPort }}
           resources:
@@ -37,11 +47,9 @@ spec:
               port: {{ .Values.containerPort }}
             initialDelaySeconds: 10
             periodSeconds: 10
-          # DEMO INTENTIONAL BUG: readinessProbe points to /healthz (does not exist).
-          # The correct path is /health. The Manifest Remediator Agent should fix this.
           readinessProbe:
             httpGet:
-              path: /healthz
+              path: /health
               port: {{ .Values.containerPort }}
             initialDelaySeconds: 5
             periodSeconds: 5

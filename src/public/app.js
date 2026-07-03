@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
       toAccount: form.toAccount.value,
       amount: form.amount.value,
       memo: form.memo.value,
+      _csrf: form._csrf.value,
     };
 
     fetch("/api/transfers", {

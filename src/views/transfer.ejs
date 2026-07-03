@@ -32,6 +32,8 @@
 
     <div class="form-card">
       <form id="transfer-form" action="/api/transfers" method="POST">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
         <div class="form-group">
           <label for="fromAccount">From Account</label>
           <select name="fromAccount" id="fromAccount" class="form-control">

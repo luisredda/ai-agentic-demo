@@ -24,3 +24,15 @@ test("Kubernetes deployment rolls pods on every Harness execution", () => {
   expect(manifest).toContain('harness.io/rollout-id: "{{ .Values.rolloutId }}"');
   expect(manifest).toContain("imagePullPolicy: Always");
 });
+
+test("Kubernetes deployment runs the container without privilege escalation", () => {
+  const manifest = fs.readFileSync(
+    path.join(__dirname, "../k8s/deployment.yaml"),
+    "utf8"
+  );
+
+  expect(manifest).toContain("runAsNonRoot: true");
+  expect(manifest).toContain("runAsUser: 1000");
+  expect(manifest).toContain("allowPrivilegeEscalation: false");
+  expect(manifest).toContain("- ALL");
+});
