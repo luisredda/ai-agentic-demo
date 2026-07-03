@@ -1,4 +1,6 @@
 const request = require("supertest");
+const { readFileSync } = require("fs");
+const path = require("path");
 const { initDb } = require("../src/db");
 
 let app;
@@ -56,4 +58,12 @@ test("POST /api/transfers rejects requests without a CSRF token", async () => {
 
   expect(res.status).toBe(403);
   expect(res.body.error).toBe("Invalid CSRF token");
+});
+
+test("transfer form actions do not push the apply button out of the card", () => {
+  const css = readFileSync(path.join(__dirname, "../src/public/styles.css"), "utf8");
+  const formActionsMatch = css.match(/\.form-actions\s*\{([^}]*)\}/);
+
+  expect(formActionsMatch).not.toBeNull();
+  expect(formActionsMatch[1]).not.toMatch(/margin-left\s*:/);
 });

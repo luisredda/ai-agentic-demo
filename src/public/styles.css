@@ -265,10 +265,8 @@ body {
   background: white;
 }
 
-/* DEMO UX BUG: transfer button is pushed completely off-screen */
 .form-actions {
   margin-top: 24px;
-  margin-left: 600px;
 }
 
 .apply-transfer-btn {
