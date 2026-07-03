@@ -7,6 +7,8 @@ metadata:
     app: {{ .Values.name }}
 spec:
   replicas: {{ .Values.replicas }}
+  # Fail the rollout quickly when readiness never passes (default is 600s).
+  progressDeadlineSeconds: 30
   selector:
     matchLabels:
       app: {{ .Values.name }}
@@ -43,6 +45,6 @@ spec:
               path: /healthz
               port: {{ .Values.containerPort }}
             initialDelaySeconds: 1
-            periodSeconds: 2            # check more often
-            timeoutSeconds: 1           # don't wait long per request
-            failureThreshold: 1  
+            periodSeconds: 2
+            timeoutSeconds: 1
+            failureThreshold: 1
