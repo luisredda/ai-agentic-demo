@@ -37,11 +37,9 @@ spec:
               port: {{ .Values.containerPort }}
             initialDelaySeconds: 10
             periodSeconds: 10
-          # DEMO INTENTIONAL BUG: readinessProbe points to /healthz (does not exist).
-          # The correct path is /health. The Manifest Remediator Agent should fix this.
           readinessProbe:
             httpGet:
-              path: /healthz
+              path: /health
               port: {{ .Values.containerPort }}
             initialDelaySeconds: 5
             periodSeconds: 5
