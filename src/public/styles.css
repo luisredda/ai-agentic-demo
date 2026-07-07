@@ -217,18 +217,18 @@ body {
   padding: 32px !important;
 }
 
-/* DEMO UX BUG: status badge is giant and covers the entire amount column */
 .status-badge {
-  display: inline-block;
-  padding: 8px 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
   border-radius: 999px;
-  font-size: 15px;
-  font-weight: 800;
+  font-size: 12px;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.4px;
-  position: absolute;
-  margin-left: -20px;
-  z-index: 10;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .status-completed { background: #c6f6d5; color: #22543d; }
