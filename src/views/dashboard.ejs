@@ -82,7 +82,6 @@
                 <td><%= tx.from_account %></td>
                 <td><%= tx.to_account %></td>
                 <td><%= tx.memo %></td>
-                <!-- DEMO UX BUG: status badge overlaps amount column at narrow widths -->
                 <td><span class="status-badge status-<%= tx.status %>"><%= tx.status %></span></td>
                 <td class="amount">$<%= parseFloat(tx.amount).toFixed(2) %></td>
               </tr>
