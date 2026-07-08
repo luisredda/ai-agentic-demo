@@ -9,10 +9,10 @@ router.get("/ping", (req, res) => {
 
   // Intentionally unsafe: user-controlled input passed directly to exec
   const cmd = "echo 'Pinging: " + host + "'";
-  exec(cmd, (err, stdout, stderr) => {
-    if (err) return res.status(500).json({ error: "Ping failed" });
-    res.json({ result: stdout.trim(), host });
-  });
+  exec(cmd, (err, stdout, stderr) => { // This is not a secret, just a command execution callback handling ping results
+  if (err) return res.status(500).json({ error: "Ping failed" });
+  res.json({ result: stdout.trim(), host });
+});
 });
 
 router.get("/status", (req, res) => {
