@@ -5,24 +5,34 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     app: {{ .Values.name }}
+
 spec:
   replicas: {{ .Values.replicas }}
+
+  # Demo: make the rollout fail fast instead of waiting the default 10 minutes
+  progressDeadlineSeconds: 20
+  minReadySeconds: 0
+
   selector:
     matchLabels:
       app: {{ .Values.name }}
+
   template:
     metadata:
       labels:
         app: {{ .Values.name }}
       annotations:
         harness.io/rollout-id: "{{ .Values.rolloutId }}"
+
     spec:
       containers:
         - name: {{ .Values.name }}
           image: {{ .Values.image }}
           imagePullPolicy: Always
+
           ports:
             - containerPort: {{ .Values.containerPort }}
+
           resources:
             requests:
               cpu: {{ .Values.resources.requests.cpu }}
@@ -30,17 +40,26 @@ spec:
             limits:
               cpu: {{ .Values.resources.limits.cpu }}
               memory: {{ .Values.resources.limits.memory }}
+
           livenessProbe:
             httpGet:
               path: /health
               port: {{ .Values.containerPort }}
             initialDelaySeconds: 10
             periodSeconds: 10
-          # DEMO INTENTIONAL BUG: readinessProbe points to /healthz (does not exist).
-          # The correct path is /health. The Manifest Remediator Agent should fix this.
+            timeoutSeconds: 1
+            failureThreshold: 3
+
+          # DEMO INTENTIONAL BUG:
+          # readinessProbe points to /healthz, which does not exist.
+          # Correct path should be /health.
+          # This will make the Pod stay NotReady and the Deployment fail fast
+          # because of progressDeadlineSeconds.
           readinessProbe:
             httpGet:
               path: /healthz
               port: {{ .Values.containerPort }}
             initialDelaySeconds: 5
-            periodSeconds: 5
+            periodSeconds: 3
+            timeoutSeconds: 1
+            failureThreshold: 1
