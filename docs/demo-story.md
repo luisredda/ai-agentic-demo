@@ -89,13 +89,13 @@ Changelog update should be present if user-facing behavior changed.
 
 After Semgrep scan, the Security Remediation Advisor should surface:
 
-- SQL query uses string concatenation (`src/routes/accounts.js`)
-- Diagnostic command uses dynamic execution (`src/routes/admin.js`)
-- Statement download uses user-controlled path (`src/routes/statements.js`)
-- FX endpoint fetches user-controlled URL (`src/routes/fx.js`)
-- Secret-like values are hardcoded (`src/config.js`)
-- HTML response reflects query data (`src/app.js`)
-- CORS allows all origins (`src/app.js`)
+- SQL query uses string concatenation (`app/routes/accounts.py`)
+- Diagnostic command uses dynamic execution (`app/routes/admin.py`)
+- Statement download uses user-controlled path (`app/routes/statements.py`)
+- FX endpoint fetches user-controlled URL (`app/routes/fx.py`)
+- Secret-like values are hardcoded (`app/config.py`)
+- HTML response reflects query data (`app/app.py`)
+- CORS allows all origins (`app/app.py`)
 
 ## Manifest Remediator Expected Behavior
 

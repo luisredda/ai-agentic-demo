@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= appName %> - Transfer</title>
+  <title>{{ app_name }} - Transfer</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -12,7 +12,7 @@
   </div>
 
   <nav class="navbar">
-    <div class="navbar-brand"><%= appName %></div>
+    <div class="navbar-brand">{{ app_name }}</div>
     <div class="navbar-links">
       <a href="/">Dashboard</a>
       <a href="/transfer" class="active">Transfer</a>
@@ -23,26 +23,26 @@
   <main class="container">
     <h1 class="page-title">Transfer Funds</h1>
 
-    <% if (error) { %>
-      <div class="alert alert-error"><%= error %></div>
-    <% } %>
-    <% if (success) { %>
-      <div class="alert alert-success"><%= success %></div>
-    <% } %>
+    {% if error %}
+      <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+    {% if success %}
+      <div class="alert alert-success">{{ success }}</div>
+    {% endif %}
 
     <div class="form-card">
       <form id="transfer-form" action="/api/transfers" method="POST">
         <div class="form-group">
           <label for="fromAccount">From Account</label>
           <select name="fromAccount" id="fromAccount" class="form-control">
-            <% if (accounts.length > 0) { %>
-              <% accounts.forEach(function(a) { %>
-                <option value="<%= a.id %>"><%= a.id %> ($<%= a.balance.toFixed(2) %>)</option>
-              <% }); %>
-            <% } else { %>
+            {% if accounts|length > 0 %}
+              {% for a in accounts %}
+                <option value="{{ a.id }}">{{ a.id }} (${{ "%.2f"|format(a.balance) }})</option>
+              {% endfor %}
+            {% else %}
               <option value="DEMO-001">DEMO-001 ($12,450.00)</option>
               <option value="DEMO-002">DEMO-002 ($3,200.00)</option>
-            <% } %>
+            {% endif %}
           </select>
         </div>
 

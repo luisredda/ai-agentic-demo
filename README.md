@@ -6,7 +6,7 @@ A demo banking application built to showcase an AI-native SDLC using Cursor, Cla
 
 ## What is this?
 
-DemoBank AI SDLC is a deliberately imperfect Node.js banking app that supports a live demo story:
+DemoBank AI SDLC is a deliberately imperfect Python (Flask) banking app that supports a live demo story:
 
 1. Users report UX bugs in Slack.
 2. Cursor analyzes the thread and opens a PR.
@@ -21,9 +21,10 @@ See `docs/demo-story.md` for the full flow.
 ## Running Locally
 
 ```bash
-npm install
-npm run seed
-npm run dev
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements-dev.txt
+python -m scripts.seed
+python -m app.server
 ```
 
 The app starts on http://localhost:3000.
@@ -31,15 +32,17 @@ The app starts on http://localhost:3000.
 ## Running Tests
 
 ```bash
-npm test
+pytest
 ```
+
+Tests emit a JUnit XML report to `test-results/junit.xml` for Harness Test Intelligence.
 
 ## Running the Demo Semgrep Scan
 
 Requires [Semgrep](https://semgrep.dev/docs/getting-started/) to be installed.
 
 ```bash
-npm run semgrep:demo
+semgrep scan --config .semgrep.yml app/
 ```
 
 Expected findings: SQL injection, command injection, path traversal, SSRF, hardcoded secret, reflected XSS, insecure CORS.
@@ -66,18 +69,21 @@ Note: The initial deployment will fail because the readiness probe points to `/h
 
 ```
 .
-├── src/
-│   ├── app.js            # Express app, routes, CORS
-│   ├── server.js         # Entry point
-│   ├── db.js             # SQLite setup
-│   ├── config.js         # App config (intentional hardcoded secrets)
+├── app/
+│   ├── app.py            # Flask app factory, routes, CORS
+│   ├── server.py         # Entry point
+│   ├── db.py             # SQLite setup
+│   ├── config.py         # App config (intentional hardcoded secrets)
 │   ├── routes/           # accounts, transfers, statements, admin, fx
-│   ├── views/            # EJS templates
-│   └── public/           # CSS and client JS
-├── tests/                # Jest + Supertest tests
-├── scripts/              # seed.js, smoke-test.sh
+│   ├── templates/        # Jinja2 templates
+│   └── static/           # CSS and client JS
+├── tests/                # pytest + Flask test client
+├── scripts/              # seed.py, smoke-test.sh
 ├── k8s/                  # Kubernetes manifests
 ├── docs/                 # Demo story, security notes, remediation guidance
+├── requirements.txt      # Runtime dependencies
+├── requirements-dev.txt  # Dev/test dependencies
+├── pytest.ini            # pytest + JUnit report config for Harness TI
 ├── .semgrep.yml          # Deterministic demo Semgrep rules
 ├── Dockerfile
 └── CHANGELOG.md
@@ -87,13 +93,13 @@ Note: The initial deployment will fail because the readiness probe points to `/h
 
 | ID       | Type                  | Location                   |
 |----------|-----------------------|----------------------------|
-| VULN-001 | SQL Injection         | src/routes/accounts.js     |
-| VULN-002 | Command Injection     | src/routes/admin.js        |
-| VULN-003 | Path Traversal        | src/routes/statements.js   |
-| VULN-004 | SSRF                  | src/routes/fx.js           |
-| VULN-005 | Hardcoded Secret      | src/config.js              |
-| VULN-006 | Reflected XSS         | src/app.js                 |
-| VULN-007 | Insecure CORS         | src/app.js                 |
+| VULN-001 | SQL Injection         | app/routes/accounts.py     |
+| VULN-002 | Command Injection     | app/routes/admin.py        |
+| VULN-003 | Path Traversal        | app/routes/statements.py   |
+| VULN-004 | SSRF                  | app/routes/fx.py           |
+| VULN-005 | Hardcoded Secret      | app/config.py              |
+| VULN-006 | Reflected XSS         | app/app.py                 |
+| VULN-007 | Insecure CORS         | app/app.py                 |
 
 These vulnerabilities exist for SAST demonstration purposes only. See `docs/security-demo-notes.md` and `docs/remediation-guidance.md`.
 
