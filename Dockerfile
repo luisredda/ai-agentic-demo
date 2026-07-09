@@ -11,4 +11,7 @@ COPY scripts/ ./scripts/
 
 EXPOSE 3000
 
+RUN useradd --no-create-home --shell /bin/false appuser
+USER appuser
+
 CMD ["python", "-m", "app.server"]
