@@ -45,7 +45,7 @@ Requires [Semgrep](https://semgrep.dev/docs/getting-started/) to be installed.
 semgrep scan --config .semgrep.yml app/
 ```
 
-Expected findings: SQL injection, command injection, path traversal, SSRF, hardcoded secret, reflected XSS, insecure CORS.
+Expected findings: SQL injection, command injection, reflected XSS, insecure CORS.
 
 ## Building the Docker Image
 
@@ -91,15 +91,12 @@ Note: The initial deployment will fail because the readiness probe points to `/h
 
 ## Intentional Vulnerabilities
 
-| ID       | Type                  | Location                   |
-|----------|-----------------------|----------------------------|
-| VULN-001 | SQL Injection         | app/routes/accounts.py     |
-| VULN-002 | Command Injection     | app/routes/admin.py        |
-| VULN-003 | Path Traversal        | app/routes/statements.py   |
-| VULN-004 | SSRF                  | app/routes/fx.py           |
-| VULN-005 | Hardcoded Secret      | app/config.py              |
-| VULN-006 | Reflected XSS         | app/app.py                 |
-| VULN-007 | Insecure CORS         | app/app.py                 |
+| ID       | Type                  | Severity | Location                   |
+|----------|-----------------------|----------|----------------------------|
+| VULN-001 | SQL Injection         | ERROR    | app/routes/accounts.py     |
+| VULN-002 | Command Injection     | ERROR    | app/routes/admin.py        |
+| VULN-006 | Reflected XSS         | WARNING  | app/app.py                 |
+| VULN-007 | Insecure CORS         | WARNING  | app/app.py                 |
 
 These vulnerabilities exist for SAST demonstration purposes only. See `docs/security-demo-notes.md` and `docs/remediation-guidance.md`.
 

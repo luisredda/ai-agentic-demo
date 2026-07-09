@@ -32,34 +32,6 @@ if host not in allowed:
 return jsonify({"result": "Pinging: " + host, "host": host})
 ```
 
-## VULN-003: Path Traversal (app/routes/statements.py)
-
-**Fix:** Resolve the path and verify it stays inside the allowed directory.
-
-```python
-base = os.path.realpath(STATEMENTS_DIR)
-file_path = os.path.realpath(os.path.join(base, file))
-if not file_path.startswith(base + os.sep):
-    return jsonify({"error": "Invalid file path"}), 400
-return send_file(file_path, as_attachment=True)
-```
-
-## VULN-004: SSRF (app/routes/fx.py)
-
-**Fix:** Remove the user-controlled URL parameter; use only internal/static rate data.
-
-```python
-# Remove the request.args.get("url") branch entirely and return only DEMO_RATES
-```
-
-## VULN-005: Hardcoded Secret (app/config.py)
-
-**Fix:** Load secrets from environment variables or a secrets manager.
-
-```python
-JWT_SECRET = os.environ["JWT_SECRET"]  # raises KeyError if not set
-```
-
 ## VULN-006: Reflected XSS (app/app.py)
 
 **Fix:** Escape user input before reflecting in HTML, or use a template engine (Jinja2 auto-escapes).

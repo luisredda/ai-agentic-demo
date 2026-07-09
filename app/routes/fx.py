@@ -1,5 +1,4 @@
-import requests
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify
 
 fx_bp = Blueprint("fx", __name__)
 
@@ -12,19 +11,9 @@ DEMO_RATES = {
 }
 
 
-# DEMO VULNERABILITY: SSRF via user-controlled URL (VULN-004)
-# Do not fix — required for Semgrep SAST demo finding demo-bank-ssrf
 @fx_bp.route("/", methods=["GET"])
 def fx():
-    url = request.args.get("url")
-    if url:
-        # Intentionally passes user-controlled URL directly to requests
-        try:
-            response = requests.get(url)
-            return jsonify({"source": "external", "data": response.text})
-        except requests.RequestException:
-            return jsonify({"error": "Failed to fetch external rate"}), 502
-
+    # Returns only internal/static rate data — no user-controlled outbound fetch.
     return jsonify(
         {
             "source": "demo",
