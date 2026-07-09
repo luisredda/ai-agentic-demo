@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= appName %> - Login</title>
+  <title>{{ app_name }} - Login</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -14,13 +14,13 @@
   <main class="container">
     <div class="login-card">
       <div class="login-header">
-        <h1><%= appName %></h1>
+        <h1>{{ app_name }}</h1>
         <p>Demo Login — any credentials accepted</p>
       </div>
 
-      <% if (error) { %>
-        <div class="alert alert-error"><%= error %></div>
-      <% } %>
+      {% if error %}
+        <div class="alert alert-error">{{ error }}</div>
+      {% endif %}
 
       <form action="/login" method="POST">
         <div class="form-group">

@@ -3,76 +3,78 @@
 This document describes how each intentional vulnerability in DemoBank AI SDLC should be fixed
 after the Security Remediation Advisor generates its PR.
 
-## VULN-001: SQL Injection (src/routes/accounts.js)
+## VULN-001: SQL Injection (app/routes/accounts.py)
 
 **Fix:** Use parameterized queries.
 
-```js
-// Before (vulnerable)
-const query = "SELECT * FROM accounts WHERE id = '" + req.params.id + "'";
-db.get(query, [], callback);
+```python
+# Before (vulnerable)
+query = "SELECT * FROM accounts WHERE id = '" + id + "'"
+row = db.execute(query).fetchone()
 
-// After (safe)
-db.get("SELECT * FROM accounts WHERE id = ?", [req.params.id], callback);
+# After (safe)
+row = db.execute("SELECT * FROM accounts WHERE id = ?", [id]).fetchone()
 ```
 
-## VULN-002: Command Injection (src/routes/admin.js)
+## VULN-002: Command Injection (app/routes/admin.py)
 
-**Fix:** Remove the dynamic exec or use a strict allowlist.
+**Fix:** Remove the dynamic shell execution or use a strict allowlist.
 
-```js
-// Before (vulnerable)
-const cmd = "echo 'Pinging: " + host + "'";
-exec(cmd, callback);
+```python
+# Before (vulnerable)
+cmd = "echo 'Pinging: " + host + "'"
+stdout = subprocess.check_output(cmd, shell=True, text=True)
 
-// After (safe — no user input in shell command)
-const allowed = ["localhost", "127.0.0.1"];
-if (!allowed.includes(host)) return res.status(400).json({ error: "Invalid host" });
-res.json({ result: "Pinging: " + host, host });
+# After (safe — no user input in shell command)
+allowed = ["localhost", "127.0.0.1"]
+if host not in allowed:
+    return jsonify({"error": "Invalid host"}), 400
+return jsonify({"result": "Pinging: " + host, "host": host})
 ```
 
-## VULN-003: Path Traversal (src/routes/statements.js)
+## VULN-003: Path Traversal (app/routes/statements.py)
 
-**Fix:** Normalize the path and verify it stays inside the allowed directory.
+**Fix:** Resolve the path and verify it stays inside the allowed directory.
 
-```js
-const filePath = path.resolve(STATEMENTS_DIR, file);
-if (!filePath.startsWith(path.resolve(STATEMENTS_DIR))) {
-  return res.status(400).json({ error: "Invalid file path" });
-}
-res.download(filePath);
+```python
+base = os.path.realpath(STATEMENTS_DIR)
+file_path = os.path.realpath(os.path.join(base, file))
+if not file_path.startswith(base + os.sep):
+    return jsonify({"error": "Invalid file path"}), 400
+return send_file(file_path, as_attachment=True)
 ```
 
-## VULN-004: SSRF (src/routes/fx.js)
+## VULN-004: SSRF (app/routes/fx.py)
 
 **Fix:** Remove the user-controlled URL parameter; use only internal/static rate data.
 
-```js
-// Remove the req.query.url branch entirely and return only DEMO_RATES
+```python
+# Remove the request.args.get("url") branch entirely and return only DEMO_RATES
 ```
 
-## VULN-005: Hardcoded Secret (src/config.js)
+## VULN-005: Hardcoded Secret (app/config.py)
 
 **Fix:** Load secrets from environment variables or a secrets manager.
 
-```js
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) throw new Error("JWT_SECRET environment variable is required");
+```python
+JWT_SECRET = os.environ["JWT_SECRET"]  # raises KeyError if not set
 ```
 
-## VULN-006: Reflected XSS (src/app.js)
+## VULN-006: Reflected XSS (app/app.py)
 
-**Fix:** Sanitize or encode user input before reflecting in HTML, or use a template engine.
+**Fix:** Escape user input before reflecting in HTML, or use a template engine (Jinja2 auto-escapes).
 
-```js
-const name = (req.query.name || "Guest").replace(/[<>"'&]/g, "");
-res.send(`<html><body><h1>Welcome, ${name}!</h1></body></html>`);
+```python
+from markupsafe import escape
+
+name = escape(request.args.get("name", "Guest"))
+return f"<html><body><h1>Welcome, {name}!</h1></body></html>"
 ```
 
-## VULN-007: Insecure CORS (src/app.js)
+## VULN-007: Insecure CORS (app/app.py)
 
 **Fix:** Restrict origins to known trusted domains.
 
-```js
-app.use(cors({ origin: "https://your-domain.com" }));
+```python
+CORS(app, origins=["https://your-domain.com"])
 ```

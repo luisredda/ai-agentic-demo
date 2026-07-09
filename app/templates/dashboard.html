@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= appName %> - Dashboard</title>
+  <title>{{ app_name }} - Dashboard</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -12,7 +12,7 @@
   </div>
 
   <nav class="navbar">
-    <div class="navbar-brand"><%= appName %></div>
+    <div class="navbar-brand">{{ app_name }}</div>
     <div class="navbar-links">
       <a href="/" class="active">Dashboard</a>
       <a href="/transfer">Transfer</a>
@@ -23,19 +23,19 @@
   <main class="container">
     <h1 class="page-title">Account Dashboard</h1>
 
-    <% if (accounts.length > 0) { %>
+    {% if accounts|length > 0 %}
       <div class="account-card">
         <div class="account-label">Primary Checking</div>
-        <div class="account-balance">$<%= accounts[0].balance.toFixed(2) %></div>
-        <div class="account-id">Account: <%= accounts[0].id %></div>
+        <div class="account-balance">${{ "%.2f"|format(accounts[0].balance) }}</div>
+        <div class="account-id">Account: {{ accounts[0].id }}</div>
       </div>
-    <% } else { %>
+    {% else %}
       <div class="account-card">
         <div class="account-label">Primary Checking</div>
         <div class="account-balance">$12,450.00</div>
         <div class="account-id">Account: DEMO-001</div>
       </div>
-    <% } %>
+    {% endif %}
 
     <!-- DEMO UX BUG: quick action cards misalign at smaller screen sizes due to fixed widths -->
     <div class="quick-actions">
@@ -75,22 +75,22 @@
           </tr>
         </thead>
         <tbody>
-          <% if (transactions.length > 0) { %>
-            <% transactions.forEach(function(tx) { %>
+          {% if transactions|length > 0 %}
+            {% for tx in transactions %}
               <tr>
-                <td><%= tx.created_at %></td>
-                <td><%= tx.from_account %></td>
-                <td><%= tx.to_account %></td>
-                <td><%= tx.memo %></td>
-                <td><span class="status-badge status-<%= tx.status %>"><%= tx.status %></span></td>
-                <td class="amount">$<%= parseFloat(tx.amount).toFixed(2) %></td>
+                <td>{{ tx.created_at }}</td>
+                <td>{{ tx.from_account }}</td>
+                <td>{{ tx.to_account }}</td>
+                <td>{{ tx.memo }}</td>
+                <td><span class="status-badge status-{{ tx.status }}">{{ tx.status }}</span></td>
+                <td class="amount">${{ "%.2f"|format(tx.amount|float) }}</td>
               </tr>
-            <% }); %>
-          <% } else { %>
+            {% endfor %}
+          {% else %}
             <tr>
               <td colspan="6" class="no-data">No recent transactions</td>
             </tr>
-          <% } %>
+          {% endif %}
         </tbody>
       </table>
     </div>

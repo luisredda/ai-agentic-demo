@@ -8,18 +8,18 @@ This application contains intentional security vulnerabilities for SAST/Semgrep 
 
 | ID       | Vulnerability           | File                        | Semgrep Rule                   |
 |----------|-------------------------|-----------------------------|-------------------------------|
-| VULN-001 | SQL Injection           | src/routes/accounts.js      | demo-bank-sql-injection        |
-| VULN-002 | Command Injection       | src/routes/admin.js         | demo-bank-command-injection    |
-| VULN-003 | Path Traversal          | src/routes/statements.js    | demo-bank-path-traversal       |
-| VULN-004 | SSRF                    | src/routes/fx.js            | demo-bank-ssrf                 |
-| VULN-005 | Hardcoded Secret        | src/config.js               | demo-bank-hardcoded-secret     |
-| VULN-006 | Reflected XSS           | src/app.js                  | demo-bank-reflected-xss        |
-| VULN-007 | Insecure CORS Wildcard  | src/app.js                  | demo-bank-insecure-cors        |
+| VULN-001 | SQL Injection           | app/routes/accounts.py      | demo-bank-sql-injection        |
+| VULN-002 | Command Injection       | app/routes/admin.py         | demo-bank-command-injection    |
+| VULN-003 | Path Traversal          | app/routes/statements.py    | demo-bank-path-traversal       |
+| VULN-004 | SSRF                    | app/routes/fx.py            | demo-bank-ssrf                 |
+| VULN-005 | Hardcoded Secret        | app/config.py               | demo-bank-hardcoded-secret     |
+| VULN-006 | Reflected XSS           | app/app.py                  | demo-bank-reflected-xss        |
+| VULN-007 | Insecure CORS Wildcard  | app/app.py                  | demo-bank-insecure-cors        |
 
 ## Running the Demo Semgrep Scan
 
 ```bash
-npm run semgrep:demo
+semgrep scan --config .semgrep.yml app/
 ```
 
 All 7 findings should appear deterministically.

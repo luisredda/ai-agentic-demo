@@ -1,14 +1,14 @@
-FROM node:20-alpine
+FROM python:3.12-slim
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY requirements.txt ./
 
-RUN npm ci --only=production
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY src/ ./src/
+COPY app/ ./app/
 COPY scripts/ ./scripts/
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["python", "-m", "app.server"]
