@@ -91,9 +91,6 @@ After Semgrep scan, the Security Remediation Advisor should surface:
 
 - SQL query uses string concatenation (`app/routes/accounts.py`)
 - Diagnostic command uses dynamic execution (`app/routes/admin.py`)
-- Statement download uses user-controlled path (`app/routes/statements.py`)
-- FX endpoint fetches user-controlled URL (`app/routes/fx.py`)
-- Secret-like values are hardcoded (`app/config.py`)
 - HTML response reflects query data (`app/app.py`)
 - CORS allows all origins (`app/app.py`)
 

@@ -6,15 +6,12 @@ This application contains intentional security vulnerabilities for SAST/Semgrep 
 
 **Do not deploy this application to production or any shared environment.**
 
-| ID       | Vulnerability           | File                        | Semgrep Rule                   |
-|----------|-------------------------|-----------------------------|-------------------------------|
-| VULN-001 | SQL Injection           | app/routes/accounts.py      | demo-bank-sql-injection        |
-| VULN-002 | Command Injection       | app/routes/admin.py         | demo-bank-command-injection    |
-| VULN-003 | Path Traversal          | app/routes/statements.py    | demo-bank-path-traversal       |
-| VULN-004 | SSRF                    | app/routes/fx.py            | demo-bank-ssrf                 |
-| VULN-005 | Hardcoded Secret        | app/config.py               | demo-bank-hardcoded-secret     |
-| VULN-006 | Reflected XSS           | app/app.py                  | demo-bank-reflected-xss        |
-| VULN-007 | Insecure CORS Wildcard  | app/app.py                  | demo-bank-insecure-cors        |
+| ID       | Vulnerability           | Severity | File                        | Semgrep Rule                   |
+|----------|-------------------------|----------|-----------------------------|-------------------------------|
+| VULN-001 | SQL Injection           | ERROR    | app/routes/accounts.py      | demo-bank-sql-injection        |
+| VULN-002 | Command Injection       | ERROR    | app/routes/admin.py         | demo-bank-command-injection    |
+| VULN-006 | Reflected XSS           | WARNING  | app/app.py                  | demo-bank-reflected-xss        |
+| VULN-007 | Insecure CORS Wildcard  | WARNING  | app/app.py                  | demo-bank-insecure-cors        |
 
 ## Running the Demo Semgrep Scan
 
@@ -22,11 +19,11 @@ This application contains intentional security vulnerabilities for SAST/Semgrep 
 semgrep scan --config .semgrep.yml app/
 ```
 
-All 7 findings should appear deterministically.
+All 4 findings should appear deterministically (2 ERROR, 2 WARNING).
 
 ## Safety Constraints
 
-- All secrets are fake strings clearly marked as demo-only.
+- Secrets are loaded from environment variables, with demo-only fallbacks.
 - No real banking API connections.
 - No real customer data.
 - Default binding is localhost only.

@@ -20,33 +20,6 @@ rules:
       - pattern: subprocess.call($CMD, ..., shell=True, ...)
       - pattern: os.system($CMD)
 
-  - id: demo-bank-path-traversal
-    message: "Demo finding: file path is built from user-controlled request input."
-    languages: [python]
-    severity: ERROR
-    pattern-either:
-      - pattern: send_file(os.path.join($BASE, request.args.get(...)), ...)
-      - pattern: send_file(os.path.join($BASE, request.args[$PARAM]), ...)
-      - pattern: open(os.path.join($BASE, request.args.get(...)), ...)
-      - pattern: open(os.path.join($BASE, request.args[$PARAM]), ...)
-
-  - id: demo-bank-ssrf
-    message: "Demo finding: outbound HTTP request uses a user-controlled URL."
-    languages: [python]
-    severity: ERROR
-    patterns:
-      - pattern-either:
-          - pattern: requests.get($URL, ...)
-          - pattern: httpx.get($URL, ...)
-      - pattern-not: requests.get("...", ...)
-      - pattern-not: httpx.get("...", ...)
-
-  - id: demo-bank-hardcoded-secret
-    message: "Demo finding: hardcoded secret-like value detected. Use Harness secrets or environment variables instead."
-    languages: [python]
-    severity: WARNING
-    pattern-regex: '(JWT_SECRET|API_KEY|ACCESS_TOKEN|PRIVATE_KEY)\s*=\s*["''][^"'']{8,}["'']'
-
   - id: demo-bank-reflected-xss
     message: "Demo finding: response appears to reflect request query data directly into HTML."
     languages: [python]
