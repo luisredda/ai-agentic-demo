@@ -24,3 +24,11 @@ def test_pay_bill_returns_200(client):
 def test_login_returns_200(client):
     res = client.get("/login")
     assert res.status_code == 200
+
+
+def test_action_cards_have_no_rotation_transforms():
+    from pathlib import Path
+
+    styles = (Path(__file__).resolve().parent.parent / "app/static/styles.css").read_text()
+    assert "action-card:nth-child" not in styles
+    assert "rotate(" not in styles.split(".action-card")[1].split(".action-icon")[0]
