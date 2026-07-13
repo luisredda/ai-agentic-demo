@@ -11,4 +11,6 @@ COPY scripts/ ./scripts/
 
 EXPOSE 3000
 
+USER nobody
+
 CMD ["python", "-m", "app.server"]
