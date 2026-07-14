@@ -9,6 +9,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app/ ./app/
 COPY scripts/ ./scripts/
 
+RUN addgroup --system appuser && adduser --system --ingroup appuser appuser
+USER appuser
+
 EXPOSE 3000
 
 CMD ["python", "-m", "app.server"]
