@@ -51,15 +51,13 @@ spec:
             timeoutSeconds: 2
             failureThreshold: 3
 
-          # DEMO INTENTIONAL BUG:
-          # readinessProbe points to /healthz, which does not exist.
-          # Correct path should be /health.
+          # FIX: Corrected readinessProbe path from /healthz to /health.
+          # The application exposes /health endpoint, not /healthz.
           # Timings below give the container ~30s to start before readiness
-          # checks begin; once /healthz is corrected, these values still allow
-          # a normal boot without the rollout timing out too early.
+          # checks begin, allowing a normal boot without timing out.
           readinessProbe:
             httpGet:
-              path: /healthz
+              path: /health
               port: {{ .Values.containerPort }}
             initialDelaySeconds: 30
             periodSeconds: 10
