@@ -131,18 +131,6 @@ body {
   transition: box-shadow 0.2s;
 }
 
-.action-card:nth-child(2) {
-  transform: rotate(15deg) translateY(30px);
-}
-
-.action-card:nth-child(3) {
-  transform: rotate(-10deg) translateY(-20px);
-}
-
-.action-card:nth-child(4) {
-  transform: rotate(8deg) translateY(40px);
-}
-
 .action-card:hover {
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
