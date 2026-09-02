@@ -43,7 +43,6 @@ def _call_mcp_tool(message):
         return {"error": "MCP tool unavailable", "source": MCP_FINANCIAL_DATA_URL}
 
 
-# DEMO VULNERABILITY: prompt injection — user input concatenated into system prompt (VULN-008)
 @ai_assistant_bp.route("/chat", methods=["POST"])
 def chat():
     """AI-powered banking assistant chat endpoint.
@@ -59,13 +58,11 @@ def chat():
     if not message:
         return jsonify({"error": "Missing required field: message"}), 400
 
-    # VULN-008: user input is concatenated directly into the system prompt
-    # without any sanitisation, enabling prompt injection attacks.
     system_prompt = (
         "You are DemoBank's AI financial assistant. "
         "Answer the customer's question using the provided context.\n\n"
-        "Customer message: " + message
-    )
+        "Customer message: {customer_message}"
+    ).format(customer_message=message.replace("{", "{{").replace("}", "}}"))
 
     # Retrieve financial context (simulated RAG / MCP tool call)
     financial_context = _query_financial_context(message)
