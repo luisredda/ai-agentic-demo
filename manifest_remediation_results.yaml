@@ -1,0 +1,71 @@
+execution_url: "https://app.harness.io/ng/#/account/EeRjnXTnS4GrLG5VNNJZUw/ci/orgs/sandbox/projects/luisredda/pipelines/AIDLC_Banking/executions/ApNSqasaScu52quzjz7rGQ/pipeline"
+
+analysis:
+  failed_stage: "Deploy"
+  failed_step: "Canary Deployment"
+  failed_step_type: "K8sCanaryDeploy"
+  failure_type: "Readiness probe failure / deployment progress deadline exceeded"
+  root_cause: >
+    The readinessProbe in k8s/deployment.yaml pointed to /healthz, which does
+    not exist in the harnessbank-demo application. The application only serves
+    /health. Every probe attempt returned HTTP 404, keeping the pod in a
+    NotReady state until the 20-second progressDeadlineSeconds was breached,
+    causing the canary deployment to fail immediately.
+  confidence: "high"
+  evidence:
+    - "Event: Readiness probe failed: HTTP probe failed with statuscode: 404"
+    - "deployment harnessbank-demo-canary exceeded its progress deadline"
+    - "Ready: false — containers with unready status: [harnessbank-demo]"
+    - "Manifest comment in deployment.yaml explicitly documents the bug: readinessProbe points to /healthz, which does not exist. Correct path should be /health."
+
+correlated_files:
+  - file: "k8s/deployment.yaml"
+    reason: "Contains the readinessProbe definition that caused the pod to stay NotReady, which exceeded the progressDeadlineSeconds of 20s on the canary Deployment."
+
+changes_applied:
+  - file: "k8s/deployment.yaml"
+    change: "Changed readinessProbe.httpGet.path from /healthz to /health"
+    before: |
+      readinessProbe:
+        httpGet:
+          path: /healthz
+          port: {{ .Values.containerPort }}
+        initialDelaySeconds: 5
+        periodSeconds: 3
+        timeoutSeconds: 1
+        failureThreshold: 1
+    after: |
+      readinessProbe:
+        httpGet:
+          path: /health
+          port: {{ .Values.containerPort }}
+        initialDelaySeconds: 5
+        periodSeconds: 3
+        timeoutSeconds: 1
+        failureThreshold: 1
+    rationale: >
+      The liveness probe already uses /health and succeeds. The application
+      exposes only /health as a health check endpoint. Aligning the readiness
+      probe to /health allows the pod to become Ready, satisfying the
+      Deployment rollout and allowing the canary to progress.
+
+validation:
+  commands_run:
+    - "YAML syntax check: parsed deployment.yaml — no errors"
+    - "Cross-check: livenessProbe.path is /health (same application, same port) — consistent"
+    - "Logs confirmed: HTTP 404 on /healthz, no evidence of /health returning a non-2xx status"
+  results:
+    - "YAML valid — no syntax errors"
+    - "Fix is consistent with liveness probe configuration already in the manifest"
+    - "No other manifest files require changes"
+
+pull_request:
+  created: true
+  url: ""
+  branch: "harness/manifest-remediation-oct02"
+
+next_steps:
+  - "Merge this PR to fix the readiness probe path"
+  - "Re-trigger the AIDLC_Banking pipeline on main to validate the canary deployment completes successfully"
+  - "Optionally increase progressDeadlineSeconds (currently 20s) to give the probe more time in slower environments"
+  - "Consider increasing failureThreshold from 1 to at least 3 to tolerate transient probe failures during startup"
