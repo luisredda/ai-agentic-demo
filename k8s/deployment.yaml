@@ -30,6 +30,10 @@ spec:
           image: {{ .Values.image }}
           imagePullPolicy: Always
 
+          env:
+            - name: DB_PATH
+              value: /tmp/demobank.db
+
           ports:
             - containerPort: {{ .Values.containerPort }}
 
