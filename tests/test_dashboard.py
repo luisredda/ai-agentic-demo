@@ -1,3 +1,6 @@
+import re
+
+
 def test_dashboard_returns_200(client):
     res = client.get("/")
     assert res.status_code == 200
@@ -13,6 +16,18 @@ def test_dashboard_pay_bill_action_links_to_bill_payment_page(client):
     text = res.get_data(as_text=True)
     assert 'href="/pay-bill"' in text
     assert "Pay Bill" in text
+
+
+def test_dashboard_quick_action_cards_stay_aligned(client):
+    res = client.get("/styles.css")
+    assert res.status_code == 200
+    css = res.get_data(as_text=True)
+
+    quick_actions = re.search(r"\.quick-actions\s*\{([^}]*)\}", css).group(1)
+    assert "flex-wrap: wrap" in quick_actions
+
+    for rule in re.findall(r"\.action-card[^{]*\{([^}]*)\}", css):
+        assert "transform" not in rule
 
 
 def test_pay_bill_returns_200(client):
