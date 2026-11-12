@@ -15,6 +15,16 @@ def test_dashboard_pay_bill_action_links_to_bill_payment_page(client):
     assert "Pay Bill" in text
 
 
+def test_dashboard_quick_actions_are_aligned(client):
+    res = client.get("/styles.css")
+    assert res.status_code == 200
+    css = res.get_data(as_text=True)
+    quick_actions = css.split(".quick-actions {", 1)[1].split("}", 1)[0]
+    assert "flex-wrap: wrap" in quick_actions
+    assert ".action-card:nth-child" not in css
+    assert "rotate(" not in css
+
+
 def test_pay_bill_returns_200(client):
     res = client.get("/pay-bill")
     assert res.status_code == 200
