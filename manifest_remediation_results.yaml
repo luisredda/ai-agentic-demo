@@ -1,80 +1,94 @@
-execution_url: "https://app.harness.io/ng/#/account/EeRjnXTnS4GrLG5VNNJZUw/ci/orgs/sandbox/projects/luisredda/pipelines/Kubernetes_Remediation/executions/PZTHmtykRsOD_ZXCRJlNfg/pipeline"
+execution_url: "https://app.harness.io/ng/#/account/EeRjnXTnS4GrLG5VNNJZUw/ci/orgs/sandbox/projects/luisredda/pipelines/Kubernetes_Remediation/executions/JFMQPQBATk63BoRpA_9BRw/pipeline"
 
 analysis:
   failed_stage: "Deploy"
   failed_step: "Canary Deployment"
   failed_step_type: "K8sCanaryDeploy"
-  failure_type: "Readiness Probe Failure / CrashLoopBackOff"
+  failure_type: "CrashLoopBackOff — container crash on startup due to file-system permission error"
   root_cause: |
-    The readinessProbe in k8s/deployment.yaml references path /healthz, which does not
-    exist in the application. The application only exposes /health. Kubernetes repeatedly
-    failed the probe, the canary pod never became Ready, and the deployment exceeded its
-    progressDeadlineSeconds of 20 seconds.
+    The security-hardening commit 3cb3c3b added a non-root system user (appuser) to the
+    Dockerfile and switched to it via USER appuser. However, the /app working directory and
+    all files inside it are owned by root (copied before the USER directive). At startup
+    server.py calls init_db(), which opens sqlite3.connect("./demobank.db") — attempting to
+    create demobank.db in /app. The non-root appuser does not have write permission to /app,
+    so the sqlite3.connect() call raises PermissionError, the process exits immediately, and
+    Kubernetes enters CrashLoopBackOff. The canary pod never reaches Ready state and the
+    deployment times out at progressDeadlineSeconds: 20.
   confidence: "high"
   evidence:
-    - "readinessProbe.httpGet.path: /healthz  (incorrect — endpoint does not exist)"
-    - "livenessProbe.httpGet.path: /health    (correct — existing endpoint)"
-    - "State: Waiting (Reason: CrashLoopBackOff) on pod harnessbank-demo-canary-5644b56b74-n5j5l"
-    - "containers with unready status: [harnessbank-demo]"
-    - "deployment harnessbank-demo-canary exceeded its progress deadline"
-    - "Back-off restarting failed container harnessbank-demo (multiple events)"
-    - "Code comment in deployment.yaml explicitly labels this an intentional demo bug"
+    - "State: Waiting (Reason: CrashLoopBackOff) on pod harnessbank-demo-canary-c66444555-rwz8h"
+    - "back-off 10s restarting failed container=harnessbank-demo (multiple back-off events)"
+    - "Container started and immediately crashed: 3 start events within ~6 seconds"
+    - "Dockerfile commit 3cb3c3b: RUN addgroup/adduser + USER appuser added AFTER COPY app/"
+    - "app/config.py: db_path defaults to ./demobank.db (relative to CWD = /app)"
+    - "app/server.py: init_db() called at module level before Flask starts — crash is pre-listen"
+    - "/app owned by root; appuser has no write permission to sqlite3.connect() target"
 
 correlated_files:
   - file: "k8s/deployment.yaml"
     reason: >
-      Contains the readinessProbe definition that caused the canary pod to never reach
-      Ready state. The liveness probe correctly uses /health while the readiness probe
-      incorrectly used /healthz.
+      The Kubernetes Deployment manifest does not set DB_PATH env var, so the app defaults
+      to ./demobank.db (/app/demobank.db). Adding DB_PATH=/tmp/demobank.db redirects the
+      database to a world-writable path without requiring an image rebuild.
+  - file: "app/config.py"
+    reason: >
+      Reads DB_PATH from environment (os.environ.get("DB_PATH", "./demobank.db")). This is
+      the lever that lets the manifest fix work: setting the env var overrides the default.
+  - file: "Dockerfile"
+    reason: >
+      Introduced the non-root USER appuser after files were copied as root, creating the
+      permission mismatch. Root cause is here but fixing it requires an image rebuild;
+      the manifest env-var fix is the safe, targeted, deploy-time remedy.
 
 changes_applied:
   - file: "k8s/deployment.yaml"
-    change: "Fix readinessProbe path from /healthz to /health"
+    change: "Add DB_PATH=/tmp/demobank.db env var to the container spec"
     before: |
-      # DEMO INTENTIONAL BUG:
-      # readinessProbe points to /healthz, which does not exist.
-      # Correct path should be /health.
-      # This will make the Pod stay NotReady and the Deployment fail fast
-      # because of progressDeadlineSeconds.
-      readinessProbe:
-        httpGet:
-          path: /healthz
-          port: {{ .Values.containerPort }}
-        initialDelaySeconds: 5
-        periodSeconds: 3
-        timeoutSeconds: 1
-        failureThreshold: 1
+      containers:
+        - name: {{ .Values.name }}
+          image: {{ .Values.image }}
+          imagePullPolicy: Always
+
+          ports:
+            - containerPort: {{ .Values.containerPort }}
     after: |
-      readinessProbe:
-        httpGet:
-          path: /health
-          port: {{ .Values.containerPort }}
-        initialDelaySeconds: 5
-        periodSeconds: 3
-        timeoutSeconds: 1
-        failureThreshold: 1
+      containers:
+        - name: {{ .Values.name }}
+          image: {{ .Values.image }}
+          imagePullPolicy: Always
+
+          env:
+            - name: DB_PATH
+              value: /tmp/demobank.db
+
+          ports:
+            - containerPort: {{ .Values.containerPort }}
     rationale: >
-      The application exposes /health (confirmed by the working livenessProbe using the
-      same path). Pointing the readinessProbe at /health ensures Kubernetes can verify
-      the container is ready to accept traffic before marking it Ready, allowing the
-      canary deployment to progress and the rollout to complete successfully.
+      /tmp is world-writable on every Linux container, including those running as non-root.
+      app/config.py already reads DB_PATH from the environment, so no application code change
+      is needed. The fix is a single additive env stanza — zero structural impact on other
+      manifest resources, fully reversible, and deployable without an image rebuild.
 
 validation:
   commands_run:
-    - "kubectl apply --dry-run=client (confirmed in Harness logs: namespace/configmap/service/deployment all passed dry-run)"
-    - "YAML structure verified via manual inspection"
+    - "YAML structure verified via manual inspection (valid Kubernetes Deployment spec)"
+    - "Confirmed DB_PATH env var is consumed by app/config.py os.environ.get()"
+    - "Confirmed /tmp is writable for non-root users in standard Linux containers"
+    - "kubectl apply --dry-run=client passed for all resources in prior Harness execution"
   results:
-    - "Dry-run passed for all four manifest resources during Harness execution"
-    - "The only runtime failure was the readiness probe after apply — confirming the YAML is valid but the probe path is wrong"
-    - "Fix is a single-field string change with zero structural impact on other resources"
+    - "deployment.yaml is valid YAML; env stanza conforms to containers[].env[] schema"
+    - "app/config.py line 11 confirms env override path: os.environ.get('DB_PATH', './demobank.db')"
+    - "No other manifests modified; namespace, configmap, and service are unaffected"
+    - "Change is additive — no existing fields removed or modified"
 
 pull_request:
   created: true
   url: ""
-  branch: "harness/manifest-remediation-nov12"
+  branch: "harness/manifest-remediation-crashloop"
 
 next_steps:
-  - "Merge the pull request after review to restore normal canary deployments."
-  - "Monitor the next canary rollout: watch for pod Ready status and confirm readiness probe succeeds within the progressDeadlineSeconds window."
-  - "Consider increasing progressDeadlineSeconds from 20s to a more realistic value (e.g. 120s) to avoid false failures on slow node starts."
-  - "Add a CI step (helm lint / helm template + kubeval) to catch invalid probe paths before deployment."
+  - "Merge this PR and trigger a new canary deployment to confirm the pod reaches Ready state."
+  - "Fix the Dockerfile root cause: move COPY app/ after RUN addgroup/adduser, or add RUN chown -R appuser:appgroup /app before USER appuser. This eliminates the need for the DB_PATH workaround long-term."
+  - "Consider using an emptyDir volume mounted at /app/data for the SQLite database instead of /tmp, to give data a stable path with explicit Kubernetes lifecycle control."
+  - "Increase progressDeadlineSeconds from 20s to a more realistic value (e.g. 60-120s) to reduce spurious deadline failures during cold node starts."
+  - "Add a CI test that starts the container image as a non-root user and verifies the /health endpoint responds, catching this class of permission error before deploy."
