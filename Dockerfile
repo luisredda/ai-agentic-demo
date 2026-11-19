@@ -11,4 +11,8 @@ COPY scripts/ ./scripts/
 
 EXPOSE 3000
 
+# Run as non-root to limit blast radius of a container compromise.
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+USER appuser
+
 CMD ["python", "-m", "app.server"]
