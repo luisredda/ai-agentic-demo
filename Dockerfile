@@ -11,4 +11,8 @@ COPY scripts/ ./scripts/
 
 EXPOSE 3000
 
+# Run as a non-root user to limit blast radius if the process is compromised.
+RUN useradd --system --no-create-home appuser
+USER appuser
+
 CMD ["python", "-m", "app.server"]
