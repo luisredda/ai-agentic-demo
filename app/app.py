@@ -1,7 +1,8 @@
 import os
 
-from flask import Flask, jsonify, redirect, render_template, request
+from flask import Flask, jsonify, redirect, render_template, render_template_string, request
 from flask_cors import CORS
+from markupsafe import escape
 
 from .db import get_db
 from .routes.accounts import accounts_bp
@@ -82,15 +83,13 @@ def create_app():
         # Demo: accept any credentials
         return redirect("/")
 
-    # DEMO VULNERABILITY: reflected XSS — query param reflected directly into HTML (VULN-006)
-    # Do not fix — required for Semgrep SAST demo finding demo-bank-reflected-xss
     @app.route("/welcome")
     def welcome():
-        name = request.args.get("name", "Guest")
-        return (
-            "<html><body><h1>Welcome to DemoBank, "
-            + request.args.get("name", "")
-            + "!</h1><p>This is a demo application.</p></body></html>"
+        name = escape(request.args.get("name", "Guest"))
+        return render_template_string(
+            "<html><body><h1>Welcome to DemoBank, {{ name }}!</h1>"
+            "<p>This is a demo application.</p></body></html>",
+            name=str(name),
         )
 
     # Health endpoint — correct path for liveness/readiness
