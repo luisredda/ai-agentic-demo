@@ -82,15 +82,13 @@ def create_app():
         # Demo: accept any credentials
         return redirect("/")
 
-    # DEMO VULNERABILITY: reflected XSS — query param reflected directly into HTML (VULN-006)
-    # Do not fix — required for Semgrep SAST demo finding demo-bank-reflected-xss
     @app.route("/welcome")
     def welcome():
-        name = request.args.get("name", "Guest")
+        from markupsafe import escape
+        name = escape(request.args.get("name", "Guest"))
         return (
-            "<html><body><h1>Welcome to DemoBank, "
-            + request.args.get("name", "")
-            + "!</h1><p>This is a demo application.</p></body></html>"
+            f"<html><body><h1>Welcome to DemoBank, {name}!</h1>"
+            "<p>This is a demo application.</p></body></html>"
         )
 
     # Health endpoint — correct path for liveness/readiness
