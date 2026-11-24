@@ -27,7 +27,8 @@ def statements():
     file_path = os.path.realpath(os.path.join(base, file))
     if not file_path.startswith(base + os.sep):
         return jsonify({"error": "Invalid file path"}), 400
-    if not os.path.exists(file_path):
-        return jsonify({"error": "Statement file not found"}), 404
 
-    return send_file(file_path, as_attachment=True)
+    try:
+        return send_file(file_path, as_attachment=True)
+    except FileNotFoundError:
+        return jsonify({"error": "Statement file not found"}), 404

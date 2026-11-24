@@ -25,9 +25,16 @@ def create_app():
     # (Express did not 308-redirect on a missing trailing slash).
     app.url_map.strict_slashes = False
 
-    # DEMO VULNERABILITY: insecure CORS wildcard (VULN-007)
-    # Do not fix — required for Semgrep SAST demo finding demo-bank-insecure-cors
-    CORS(app, origins="*")
+    # CORS: explicit origin allowlist from CORS_ALLOWED_ORIGINS (comma-separated).
+    # Default is same-origin only (no CORS headers), which the bundled static
+    # frontend does not need. A wildcard entry is rejected.
+    allowed_origins = [
+        o.strip()
+        for o in os.environ.get("CORS_ALLOWED_ORIGINS", "").split(",")
+        if o.strip() and o.strip() != "*"
+    ]
+    if allowed_origins:
+        CORS(app, origins=allowed_origins)
 
     # API blueprints
     app.register_blueprint(accounts_bp, url_prefix="/api/accounts")
