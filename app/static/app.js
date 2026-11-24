@@ -23,18 +23,30 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((res) => res.json())
       .then((result) => {
         const resultDiv = document.getElementById("transfer-result");
+        const box = document.createElement("div");
         if (result.success) {
           // DEMO UX BUG: shows success even for invalid (negative/zero) amounts
-          resultDiv.innerHTML =
-            '<div class="alert alert-success" style="font-size:18px;font-weight:800;padding:24px;">✅ Transfer completed successfully!<br>Amount transferred: <strong>$' +
-            result.amount +
-            '</strong><br><span style="font-size:12px;color:#276749;">Transaction ID: ' +
-            result.transferId +
-            "</span></div>";
+          box.className = "alert alert-success";
+          box.style.cssText =
+            "font-size:18px;font-weight:800;padding:24px;";
+          box.appendChild(
+            document.createTextNode("✅ Transfer completed successfully!")
+          );
+          box.appendChild(document.createElement("br"));
+          box.appendChild(document.createTextNode("Amount transferred: "));
+          const strong = document.createElement("strong");
+          strong.textContent = "$" + result.amount;
+          box.appendChild(strong);
+          box.appendChild(document.createElement("br"));
+          const span = document.createElement("span");
+          span.style.cssText = "font-size:12px;color:#276749;";
+          span.textContent = "Transaction ID: " + result.transferId;
+          box.appendChild(span);
         } else {
-          resultDiv.innerHTML =
-            '<div class="alert alert-error">Error: ' + result.error + "</div>";
+          box.className = "alert alert-error";
+          box.textContent = "Error: " + result.error;
         }
+        resultDiv.replaceChildren(box);
       })
       .catch(() => {
         document.getElementById("transfer-result").innerHTML =
