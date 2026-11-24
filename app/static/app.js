@@ -23,22 +23,38 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((res) => res.json())
       .then((result) => {
         const resultDiv = document.getElementById("transfer-result");
+        resultDiv.textContent = "";
+        const alertDiv = document.createElement("div");
         if (result.success) {
-          // DEMO UX BUG: shows success even for invalid (negative/zero) amounts
-          resultDiv.innerHTML =
-            '<div class="alert alert-success" style="font-size:18px;font-weight:800;padding:24px;">✅ Transfer completed successfully!<br>Amount transferred: <strong>$' +
-            result.amount +
-            '</strong><br><span style="font-size:12px;color:#276749;">Transaction ID: ' +
-            result.transferId +
-            "</span></div>";
+          alertDiv.className = "alert alert-success";
+          alertDiv.setAttribute("style", "font-size:18px;font-weight:800;padding:24px;");
+
+          const msg = document.createTextNode("✅ Transfer completed successfully!");
+          alertDiv.appendChild(msg);
+          alertDiv.appendChild(document.createElement("br"));
+
+          const amountStrong = document.createElement("strong");
+          amountStrong.textContent = "Amount transferred: $" + Number(result.amount).toFixed(2);
+          alertDiv.appendChild(amountStrong);
+          alertDiv.appendChild(document.createElement("br"));
+
+          const txSpan = document.createElement("span");
+          txSpan.setAttribute("style", "font-size:12px;color:#276749;");
+          txSpan.textContent = "Transaction ID: " + result.transferId;
+          alertDiv.appendChild(txSpan);
         } else {
-          resultDiv.innerHTML =
-            '<div class="alert alert-error">Error: ' + result.error + "</div>";
+          alertDiv.className = "alert alert-error";
+          alertDiv.textContent = "Error: " + (result.error || "Unknown error");
         }
+        resultDiv.appendChild(alertDiv);
       })
       .catch(() => {
-        document.getElementById("transfer-result").innerHTML =
-          '<div class="alert alert-error">Transfer request failed.</div>';
+        const resultDiv = document.getElementById("transfer-result");
+        resultDiv.textContent = "";
+        const alertDiv = document.createElement("div");
+        alertDiv.className = "alert alert-error";
+        alertDiv.textContent = "Transfer request failed.";
+        resultDiv.appendChild(alertDiv);
       });
   });
 });
