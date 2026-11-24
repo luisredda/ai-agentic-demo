@@ -9,7 +9,7 @@ app = create_app()
 def main():
     print(f"DemoBank AI SDLC running on http://localhost:{config['port']}")
     print("WARNING: This app is intentionally vulnerable. DEMO USE ONLY.")
-    app.run(host="0.0.0.0", port=config["port"])
+    app.run(host=config["host"], port=config["port"])
 
 
 if __name__ == "__main__":
