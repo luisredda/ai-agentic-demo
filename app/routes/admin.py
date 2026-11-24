@@ -16,7 +16,7 @@ def ping():
         return jsonify({"error": "Invalid host"}), 400
 
     try:
-        stdout = subprocess.check_output(["echo", f"Pinging: {host}"], text=True)
+        stdout = subprocess.check_output(["echo", "Pinging:", host], text=True)
     except subprocess.CalledProcessError:
         return jsonify({"error": "Ping failed"}), 500
     return jsonify({"result": stdout.strip(), "host": host})
