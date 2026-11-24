@@ -16,9 +16,9 @@ def ping():
     # Allowlist the host and invoke without a shell (argv list).
     if not _HOST_RE.match(host):
         return jsonify({"error": "Invalid host"}), 400
-    cmd = ["echo", "Pinging: " + host]
+    cmd = ["ping", "-c", "1", "-W", "2", host]
     try:
-        stdout = subprocess.check_output(cmd, shell=False, text=True)
+        stdout = subprocess.check_output(cmd, shell=False, text=True, timeout=5)
     except subprocess.CalledProcessError:
         return jsonify({"error": "Ping failed"}), 500
     return jsonify({"result": stdout.strip(), "host": host})
