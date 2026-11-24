@@ -30,6 +30,10 @@ spec:
           image: {{ .Values.image }}
           imagePullPolicy: Always
 
+          env:
+            - name: BIND_HOST
+              value: "0.0.0.0"
+
           ports:
             - containerPort: {{ .Values.containerPort }}
 

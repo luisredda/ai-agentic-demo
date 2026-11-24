@@ -8,6 +8,8 @@ API_KEY = os.environ.get("API_KEY", "demo-only-fallback-change-me")
 ACCESS_TOKEN = os.environ.get("ACCESS_TOKEN", "demo-only-fallback-change-me")
 
 config = {
+    # Bind to loopback by default; container deployments set BIND_HOST explicitly.
+    "host": os.environ.get("BIND_HOST", "127.0.0.1"),
     "port": int(os.environ.get("PORT", 3000)),
     "db_path": os.environ.get("DB_PATH", "./demobank.db"),
     "jwt_secret": JWT_SECRET,
